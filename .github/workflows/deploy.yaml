@@ -69,8 +69,9 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup config map
-        run: echo "${{secrets.ENVS }}" > .env
-        run: kubectl create configmap cart-envs --from-env-file=.env -n its
+        run: |
+          echo "${{secrets.ENVS }}" > .env
+          kubectl create configmap cart-envs --from-env-file=.env -n its
 
       - name: Deploy to the Kubernetes cluster
         uses: azure/k8s-deploy@v5
