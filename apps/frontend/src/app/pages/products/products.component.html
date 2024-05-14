@@ -1,0 +1,7 @@
+<app-product-filters [filters]="(filters$ | async) ?? {}" (filtersChange)="filtersChanged($event)"></app-product-filters>
+
+<div class="row row-cols-1 row-cols-md-4 g-6 mt-5">
+  <div class="col mt-2 " *ngFor="let product of products$ | async">
+    <app-product-card [product]="product" [vat]="(vat$ | async) ?? 0" (add)="addProduct($event)" (detail)="goToDetail($event)" class="h-100"></app-product-card>
+  </div>
+</div>

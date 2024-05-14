@@ -1,0 +1,10 @@
+{
+  "/api": {
+    "target": "http://localhost:3000",
+    "secure": false
+  },
+  "/api-server-node-api": {
+    "target": "http://localhost:3000",
+    "secure": false
+  }
+}

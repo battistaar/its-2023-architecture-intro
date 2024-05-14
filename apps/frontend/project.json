@@ -16,7 +16,9 @@
         "polyfills": ["zone.js"],
         "tsConfig": "apps/frontend/tsconfig.app.json",
         "assets": ["apps/frontend/src/favicon.ico", "apps/frontend/src/assets"],
-        "styles": ["apps/frontend/src/styles.css"],
+        "styles": [
+          "node_modules/bootstrap/dist/css/bootstrap.min.css",
+          "apps/frontend/src/styles.css"],
         "scripts": []
       },
       "configurations": {
@@ -53,7 +55,10 @@
           "buildTarget": "frontend:build:development"
         }
       },
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "development",
+      "options": {
+        "proxyConfig": "apps/frontend/proxy.conf.json"
+      }
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
@@ -70,6 +75,10 @@
       "options": {
         "jestConfig": "apps/frontend/jest.config.ts"
       }
+    },
+    "docker-build": {
+      "dependsOn": ["build"],
+      "command": "docker build -f apps/frontend/Dockerfile . -t cart-frontend"
     }
   }
 }

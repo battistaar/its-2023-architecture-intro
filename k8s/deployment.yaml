@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: its-cart-api
+spec:
+  selector:
+    matchLabels:
+      app: its-cart-api
+  template:
+    metadata:
+      labels:
+        app: its-cart-api
+    spec:
+      imagePullSecrets:
+        - name: its-ebattistella-registry
+      containers:
+        - name: its-api-node
+          image: registry.ebattistella.com/its-api-node
+          env:
+          - name: API_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: cart-envs
+                key: API_PORT
+          - name: DB_URL
+            valueFrom:
+              configMapKeyRef:
+                name: cart-envs
+                key: DB_URL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: its-cart-api
+spec:
+  type: ClusterIP
+  selector:
+    app: its-cart-api
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: its-cart-frontend
+spec:
+  selector:
+    matchLabels:
+      app: its-cart-frontend
+  template:
+    metadata:
+      labels:
+        app: its-cart-frontend
+    spec:
+      imagePullSecrets:
+        - name: its-ebattistella-registry
+      containers:
+        - name: its-cart-frontend
+          image: registry.ebattistella.com/its-cart-frontend
+          env:
+          - name: API_URL
+            valueFrom:
+              configMapKeyRef:
+                name: cart-envs
+                key: API_URL
+          - name: FE_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: cart-envs
+                key: FE_PORT
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: its-cart-frontend
+spec:
+  type: ClusterIP
+  selector:
+    app: its-cart-frontend
+  ports:
+    - name: http
+      port: 7100
+      targetPort: 7100

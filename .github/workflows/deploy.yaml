@@ -1,0 +1,86 @@
+name: Deploy to k8s Cluster
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Setuo Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build applications
+        run: npm run build
+
+      - name: Login to Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: registry.ebattistella.com
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push the Docker image for api-node
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          file: apps/api-node/Dockerfile
+          tags: |
+            registry.ebattistella.com/its-api-node:latest
+            registry.ebattistella.com/its-api-node:${{ github.sha }}
+
+      - name: Build and push the Docker image for frontend
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          file: apps/api-node/DockerfileProd
+          tags: |
+            registry.ebattistella.com/its-cart-frontend:latest
+            registry.ebattistella.com/its-cart-frontend:${{ github.sha }}
+  deploy:
+    name: Deploy
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set the Kubernetes context
+        uses: azure/k8s-set-context@v4
+        with:
+          method: service-account
+          k8s-url: https://ebattistella.com:6443
+          k8s-secret: ${{ secrets.K8S_ACCOUNT }}
+
+      - name: Clone Repository
+        uses: actions/checkout@v3
+
+      - name: Setup config map
+        run: echo "${{secrets.ENVS }}" > .env
+        run: kubectl create configmap cart-envs --from-env-file=.env -n its
+
+      - name: Deploy to the Kubernetes cluster
+        uses: azure/k8s-deploy@v5
+        with:
+          namespace: its
+          manifests: |
+            ./k8s/mongo.yaml
+            ./k8s/deployment.yaml
+            ./k8s/ingress.yaml
+          images: |
+            registry.ebattistella.com/its-api-node:${{ github.sha }}
+            registry.ebattistella.com/its-cart-frontend:${{ github.sha }}
+

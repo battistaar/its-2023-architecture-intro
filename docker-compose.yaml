@@ -1,0 +1,17 @@
+services:
+  frontend:
+    image: cart-frontend
+    ports:
+      - "80:7100"
+    environment:
+      - API_URL=api:3000/api
+      - FE_PORT=7100
+
+  api:
+    image: cart-api-node
+    environment:
+      - DB_URL=mongodb://mongo:27017/its_2023_cart
+      - API_PORT=3000
+
+  mongo:
+    image: mongo:latest

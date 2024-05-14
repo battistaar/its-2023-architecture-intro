@@ -1,14 +1,24 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { NxWelcomeComponent } from './nx-welcome.component';
+import { VatService } from './services/vat.service';
+import { AuthService } from './services/auth.service';
+
 
 @Component({
-  standalone: true,
-  imports: [NxWelcomeComponent, RouterModule],
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
+  styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'frontend';
+  currentUser$ = this.authSrv.currentUser$;
+
+  constructor(protected varSrv: VatService,
+              protected authSrv: AuthService) {
+    let country = 'IT';
+    this.varSrv.setCountry(country);
+  }
+
+  logout() {
+    this.authSrv.logout();
+  }
 }
+
