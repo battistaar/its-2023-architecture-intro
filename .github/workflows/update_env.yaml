@@ -1,0 +1,23 @@
+name: Deploy ConfigMap
+
+on: workflow_dispatch
+
+jobs:
+  deploy:
+    name: Deploy ConfigMap
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set the Kubernetes context
+        uses: azure/k8s-set-context@v4
+        with:
+          method: service-account
+          k8s-url: https://ebattistella.com:6443
+          k8s-secret: ${{ secrets.K8S_ACCOUNT }}
+
+      - name: Setup config map
+        run: |
+          echo "${{secrets.ENVS }}" > .env
+          kubectl create configmap cart-envs --from-env-file=.env -n its -o yaml --dry-run=client | kubectl apply -f -
+      - name: Restart deployments
+        run: |
+          kubectl rollout restart deployment --selector=collection=its-cart-services -n its

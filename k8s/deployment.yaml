@@ -6,6 +6,7 @@ spec:
   selector:
     matchLabels:
       app: its-cart-api
+      collection: its-cart-services
   template:
     metadata:
       labels:
@@ -50,6 +51,7 @@ spec:
   selector:
     matchLabels:
       app: its-cart-frontend
+      collection: its-cart-services
   template:
     metadata:
       labels:
