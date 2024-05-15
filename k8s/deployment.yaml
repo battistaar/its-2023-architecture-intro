@@ -8,9 +8,6 @@ spec:
       app: its-cart-api
       collection: its-cart-services
   template:
-    metadata:
-      labels:
-        app: its-cart-api
     spec:
       imagePullSecrets:
         - name: its-ebattistella-registry
@@ -53,9 +50,6 @@ spec:
       app: its-cart-frontend
       collection: its-cart-services
   template:
-    metadata:
-      labels:
-        app: its-cart-frontend
     spec:
       imagePullSecrets:
         - name: its-ebattistella-registry
