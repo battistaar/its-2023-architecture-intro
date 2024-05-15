@@ -2,16 +2,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: its-cart-api
+  labels:
+    app-group: its-cart-services
 spec:
   selector:
     matchLabels:
       app: its-cart-api
-      collection: its-cart-services
   template:
     metadata:
       labels:
         app: its-cart-api
-        collection: its-cart-services
     spec:
       imagePullSecrets:
         - name: its-ebattistella-registry
@@ -48,16 +48,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: its-cart-frontend
+  labels:
+    app-group: its-cart-services
 spec:
   selector:
     matchLabels:
       app: its-cart-frontend
-      collection: its-cart-services
   template:
     metadata:
       labels:
         app: its-cart-frontend
-        collection: its-cart-services
     spec:
       imagePullSecrets:
         - name: its-ebattistella-registry
